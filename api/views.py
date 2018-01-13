@@ -1,9 +1,10 @@
 import json
-from api.models import User, Submission
+from api.serializers import *
 from bson import ObjectId
 from rest_framework import status
 from rest_framework.response import Response
 from rest_framework.views import APIView
+from rest_framework_mongoengine import viewsets
 
 
 # To make ObjectID serializable
@@ -17,40 +18,47 @@ class JSONEncoder(json.JSONEncoder):
 #####################################
 #########   Submissions    ##########
 #####################################
-class TopPointsSubmissions(APIView):
+class TopPointSubmissions(viewsets.ModelViewSet):
+    serializer_class = SubmissionSerializer
 
-    def get(self, request, *args, **kwargs):
-        type_submission = kwargs.get('type_submission')
-        if type_submission == 'any':
-            # Top 10 submissions ordered by punctuation (desc)
-            submissions = Submission.objects.order_by('-punctuation')[:10].to_json()
-        elif type_submission == 'discussions':
-            # Top 10 submissions that are discussions ordered by punctuation (desc)
-            submissions = Submission.objects(is_discussion=True).order_by('-punctuation')[:10].to_json()
-        elif type_submission == 'articles':
-            # Top 10 submissions that are articles ordered by punctuation (desc)
-            submissions = Submission.objects(is_discussion=False).order_by('-punctuation')[:10].to_json()
-        else:
-            return Response(status=status.HTTP_400_BAD_REQUEST)
-        return Response(json.loads(submissions))
+    def get_queryset(self):
+        return Submission.objects.order_by('-punctuation')[:10]
 
 
-class TopCommentsSubmissions(APIView):
+class TopPointDiscussions(viewsets.ModelViewSet):
+    serializer_class = SubmissionSerializer
 
-    def get(self, request, *args, **kwargs):
-        type_submission = kwargs.get('type_submission')
-        if type_submission == 'any':
-            # Top 10 submissions ordered by number of comments (desc)
-            submissions = Submission.objects.order_by('-number_comments')[:10].to_json()
-        elif type_submission == 'discussions':
-            # Top 10 submissions that are discussions ordered by number of comments (desc)
-            submissions = Submission.objects(is_discussion=True).order_by('-number_comments')[:10].to_json()
-        elif type_submission == 'articles':
-            # Top 10 submissions that are articles ordered by number of comments (desc)
-            submissions = Submission.objects(is_discussion=False).order_by('-number_comments')[:10].to_json()
-        else:
-            return Response(status=status.HTTP_400_BAD_REQUEST)
-        return Response(json.loads(submissions))
+    def get_queryset(self):
+        return Submission.objects(is_discussion=True).order_by('-punctuation')[:10]
+
+
+class TopPointArticles(viewsets.ModelViewSet):
+    serializer_class = SubmissionSerializer
+
+    def get_queryset(self):
+        return Submission.objects(is_discussion=False).order_by('-punctuation')
+
+
+class TopDiscussedSubmissions(viewsets.ModelViewSet):
+    serializer_class = SubmissionSerializer
+
+    def get_queryset(self):
+        return Submission.objects.order_by('-number_comments')[:10]
+
+
+class TopDiscussedDiscussions(viewsets.ModelViewSet):
+    serializer_class = SubmissionSerializer
+
+    def get_queryset(self):
+        return Submission.objects(is_discussion=True).order_by('-number_comments')[:10]
+
+
+class TopDiscussedArticles(viewsets.ModelViewSet):
+    serializer_class = SubmissionSerializer
+
+    def get_queryset(self):
+        print(type(Submission.objects))
+        return Submission.objects(is_discussion=False).order_by('-number_comments')[:10]
 
 
 #####################################
