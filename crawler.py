@@ -34,7 +34,7 @@ while n > 0:
         submission['number_comments'] = int(entry["data-comments-count"])
         submission['url'] = entry["data-url"]
         if entry["data-domain"] == "self.Python":  # Is a discussion
-            submission['url'] = "https://www.reddit.com" + submission['url']  # In this case the url is relative
+            submission['url'] = "https://www.reddit.com" + submission['url']  # In this case the given url is relative
             submission['is_discussion'] = True
         else:
             submission['is_discussion'] = False
