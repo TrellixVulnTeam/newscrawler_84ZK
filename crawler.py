@@ -1,5 +1,4 @@
 import sys
-from datetime import datetime
 from urllib.request import Request, urlopen
 from pymongo import MongoClient
 from bs4 import BeautifulSoup
@@ -30,9 +29,9 @@ while n > 0:
     for entry in entries:
         # Gather the information that we need
         submission = {}
-        submission['punctuation'] = entry["data-score"]
+        submission['punctuation'] = int(entry["data-score"])
         submitter = entry["data-author"]
-        submission['number_comments'] = entry["data-comments-count"]
+        submission['number_comments'] = int(entry["data-comments-count"])
         submission['url'] = entry["data-url"]
         if entry["data-domain"] == "self.Python":  # Is a discussion
             submission['url'] = "https://www.reddit.com" + submission['url']  # In this case the url is relative
@@ -44,8 +43,9 @@ while n > 0:
 
         # Insert submission
         id_submission = db.submissions.insert_one(submission).inserted_id
-        # Insert user
+        # Insert or update user
         db.users.update_one({'username': submitter}, {'$push': {'submissions': id_submission}}, upsert=True)
 
+    # Get the link of the next page
     next_page = soup.find("span", {"class": "nextprev"}).find("a")["href"]
     n = n - 1
