@@ -1,5 +1,5 @@
 import json
-from api.models import *
+from api.models import User, Submission
 from bson import ObjectId
 from rest_framework import status
 from rest_framework.response import Response
@@ -32,7 +32,7 @@ class TopPointsSubmissions(APIView):
             submissions = Submission.objects(is_discussion=False).order_by('-punctuation')[:10].to_json()
         else:
             return Response(status=status.HTTP_400_BAD_REQUEST)
-        return Response(submissions)
+        return Response(json.loads(submissions))
 
 
 class TopCommentsSubmissions(APIView):
@@ -50,7 +50,7 @@ class TopCommentsSubmissions(APIView):
             submissions = Submission.objects(is_discussion=False).order_by('-number_comments')[:10].to_json()
         else:
             return Response(status=status.HTTP_400_BAD_REQUEST)
-        return Response(submissions)
+        return Response(json.loads(submissions))
 
 
 #####################################
@@ -73,7 +73,7 @@ class TopSubmitters(APIView):
         i = 0
         for user in User.objects.aggregate(*pipeline):
             if i < 10:
-                top_submitters.append(JSONEncoder().encode(user))
+                top_submitters.append(json.loads(JSONEncoder().encode(user)))
             i = i + 1
 
         return Response(top_submitters)
@@ -89,5 +89,6 @@ class PostsUser(APIView):
         # Get submissions of the user, user[0] because username is unique
         user_submissions = []
         for submission in user[0].submissions:
-            user_submissions.append(Submission.objects.get(id=submission).to_json())
+            user_submissions.append(json.loads(Submission.objects.get(id=submission).to_json()))
         return Response(user_submissions)
+

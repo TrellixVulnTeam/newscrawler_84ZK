@@ -12,8 +12,10 @@ https://docs.djangoproject.com/en/2.0/ref/settings/
 
 import os
 import mongoengine
+import sys
 
 # Build paths inside the project like this: os.path.join(BASE_DIR, ...)
+
 BASE_DIR = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
 
 
@@ -72,8 +74,38 @@ TEMPLATES = [
 WSGI_APPLICATION = 'newscrawler.wsgi.application'
 
 
-# Configuration of MongoDB
-mongoengine.connect('newscrawler', host='localhost')
+# We keep an sqlite3 database because django tests will fail if not
+DATABASES = {
+    'default': {
+        'ENGINE': 'django.db.backends.sqlite3',
+        'NAME': os.path.join(BASE_DIR, 'db.sqlite3'),
+    }
+}
+# We define 2 Mongo databases - default and test
+MONGODB_DATABASES = {
+    "default": {
+        "name": "newscrawler",
+        "host": "localhost",
+    },
+
+    "test": {
+        "name": "test",
+        "host": "localhost",
+    }
+}
+
+# Check if we are testing or not
+if 'test' in sys.argv:
+    db = 'test'
+else:
+    db = 'default'
+
+
+# Establish connection with default or test database, depending on the management command
+mongoengine.connect(
+    db=MONGODB_DATABASES[db]['name'],
+    host=MONGODB_DATABASES[db]['host']
+)
 
 # Password validation
 # https://docs.djangoproject.com/en/2.0/ref/settings/#auth-password-validators

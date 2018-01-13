@@ -1,15 +1,6 @@
 from mongoengine import *
 
 
-class User(Document):
-    username = StringField()
-    submissions = ListField()
-
-    meta = {
-        'collection': 'users'  # Collection name in MongoDB
-    }
-
-
 class Submission(Document):
     punctuation = IntField()
     number_comments = IntField()
@@ -20,4 +11,13 @@ class Submission(Document):
 
     meta = {
         'collection': 'submissions'  # Collection name in MongoDB
+    }
+
+
+class User(Document):
+    username = StringField()
+    submissions = ListField()
+
+    meta = {
+        'collection': 'users'  # Collection name in MongoDB
     }
