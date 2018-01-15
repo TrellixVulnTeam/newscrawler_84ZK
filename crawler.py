@@ -1,7 +1,7 @@
 import sys
-from urllib.request import Request, urlopen
-from pymongo import MongoClient
 from bs4 import BeautifulSoup
+from pymongo import MongoClient
+from urllib.request import Request, urlopen
 
 # Number of pages to crawl (By default 3)
 n = 3

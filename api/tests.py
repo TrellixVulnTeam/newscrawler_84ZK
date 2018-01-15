@@ -2,10 +2,14 @@ import json
 from api.models import *
 from django.test import TestCase
 from rest_framework import status
+from mongoengine.connection import get_connection, disconnect
 
 
 class ApiTestCase(TestCase):
-
+    # Delete test database
+    connection = get_connection()
+    connection.drop_database('test')
+    disconnect()
     # Define a test database
     @classmethod
     def setUpClass(cls):

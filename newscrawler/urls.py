@@ -11,9 +11,10 @@ router.register(r'submissions/top/points/articles', TopPointArticles, r"PointArt
 router.register(r'submissions/top/discussed/any', TopDiscussedSubmissions, r"DiscussedSubmission")
 router.register(r'submissions/top/discussed/discussions', TopDiscussedDiscussions, r"DiscussedDiscussions")
 router.register(r'submissions/top/discussed/articles', TopDiscussedArticles, r"DiscussedArticles")
+router.register(r'users/top/submitters', TopSubmitters, r"TopSubmiters")
 
 urlpatterns = [
-    # apiview
+    # apiviews
     url(r'^', include('api.urls')),
     # viewsets
     url(r'^api/', include(router.urls)),

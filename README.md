@@ -3,20 +3,26 @@ News Crawler is composed of a script that gather information of every submission
 
 ### Assuptions
 * The API readings have to be more efficient than the writings of the script in the database.
-* The script only runs one time and the database is empty, so I don't have to check if the news are saved in the database or not.
+* The script only runs one time and the database is empty, so I don't have to check if the news exists in the database or not.
 * For the design of the database I have only taken into account the API calls that I could do saving only the submissions and submitters. 
 
 ### Decisions
 I have experience with Django and Mongo, but not in the same project. So I decided to develop this API with Mongo to gain experience devoloping with this two technologies together.
+
 For the API I decided to use the [Django-rest-framework](http://www.django-rest-framework.org/) because is the most common.
+
 For the tests I decided to run in a diferent database.
+
 For reason of time, because I am writting my degree thesis at the moment, I decided to save and give statistics only of the news and submitters, but not of the comments.
 
 
 ### Design
 The design is not complex, it is composed of a script that save the news and submitters in the database and an API that give the statistics.
+
 The design of the database has changed. At the begining I tried to make one collection with all the submitions and its submitters embedded. With this design, the inserts are fast (because I could use the insertMany function), but it creates a lot of repeated users, the readings are less efficient and the mapReduce function is needed to know the top submitters. 
+
 So, taking into account that the API calls return information only related to submissions or users, except all the submissions of a user that is needed a join (not efficient in mongo), I decided to make two collections, Submissions and Users. The inserts are less efficient because I have to check if every user exists or not and I can't use the insertMany function, but now the readings are faster and simplier.
+
 I had to create a unique index in the username field of the users collections to check if the user exists or not.
 
 ## Getting started
@@ -62,6 +68,10 @@ mongoengine.connect(
     host=MONGODB_DATABASES[db]['host']
 )
 ```
+You have to change in crawler.py too:
+```
+client = MongoClient()
+```
 
 ## Running the tests
 Run the tests to check if the connection to the Mongo is well configurated and the API works well.
@@ -69,8 +79,6 @@ Run the tests to check if the connection to the Mongo is well configurated and t
 ```
 ./manage.py test
 ```
-After the tests, destroy the test database, if not, the tests won't be working the next time.
-
 ## Deployment
 First of all, run the script that save all the information to the database.
 
@@ -87,7 +95,19 @@ After it, run the API:
 ```
 python manage.py runserver
 ```
-When it is running you can acces to http://127.0.0.1:8000/api and check all the API urls.
+
+## API Urls
+
+- /api/submissions/{id}/
+- /api/submissions/top/points/any/
+- /api/submissions/top/points/discussions/
+- /api/submissions/top/points/articles/
+- /api/submissions/top/discussed/any/
+- /api/submissions/top/discussed/discussions/
+- /api/submissions/top/discussed/articles/
+- /api/users/{id}/ 
+- /api/users/{id}/posts/
+- /api/users/top/submitters/
 
 
 ## Authors

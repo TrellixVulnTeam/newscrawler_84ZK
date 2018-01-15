@@ -16,7 +16,7 @@ class Submission(Document):
 
 class User(Document):
     username = StringField()
-    submissions = ListField()
+    submissions = ListField(ReferenceField(Submission))
 
     meta = {
         'collection': 'users'  # Collection name in MongoDB
